@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'package:uuid/uuid.dart';
+import 'dart:io';
 import 'package:workmanager/workmanager.dart';
+import 'common/log.dart';
+import 'common/log.dart';
 import 'common/log.dart';
 import 'loading_screen.dart';
 import 'package:flutter/material.dart';
 
 void writeLog(){
   Workmanager.executeTask((taskName, inputData) async {
-    print('taskName:');
-    print(taskName);
-    print('inputData:');
-    print(inputData);
+    final f = File(await getFilePath(logFileName));
     await appLog.i('reported at ${DateTime.now()}');
+    f.writeAsStringSync('[INFO] reported at ${DateTime.now()}', mode: FileMode.writeOnlyAppend);
     return Future.value(true);
   });
 }

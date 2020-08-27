@@ -62,42 +62,42 @@ class AppLogger implements Logger {
   }
 
   @override
-  void close() async {
+  Future<void> close() async {
     (await _logger).close();
   }
 
   @override
-  void d(message, [error, StackTrace stackTrace]) async {
+  Future<void> d(message, [error, StackTrace stackTrace]) async {
     (await _logger).d(message, error, stackTrace);
   }
 
   @override
-  void e(message, [error, StackTrace stackTrace]) async {
+  Future<void> e(message, [error, StackTrace stackTrace]) async {
     (await _logger).e(message, error, stackTrace);
   }
 
   @override
-  void i(message, [error, StackTrace stackTrace]) async {
+  Future<void> i(message, [error, StackTrace stackTrace]) async {
     (await _logger).i(message, error, stackTrace);
   }
 
   @override
-  void log(Level level, message, [error, StackTrace stackTrace]) async {
+  Future<void> log(Level level, message, [error, StackTrace stackTrace]) async {
     (await _logger).log(level, message, error, stackTrace);
   }
 
   @override
-  void v(message, [error, StackTrace stackTrace]) async {
+  Future<void> v(message, [error, StackTrace stackTrace]) async {
     (await _logger).d(message, error, stackTrace);
   }
 
   @override
-  void w(message, [error, StackTrace stackTrace]) async {
+  Future<void> w(message, [error, StackTrace stackTrace]) async {
     (await _logger).w(message, error, stackTrace);
   }
 
   @override
-  void wtf(message, [error, StackTrace stackTrace]) async {
+  Future<void> wtf(message, [error, StackTrace stackTrace]) async {
     (await _logger).wtf(message, error, stackTrace);
   }
 }

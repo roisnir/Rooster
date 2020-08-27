@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rooster/common/log.dart';
 import 'package:rooster/common/user.dart';
 import 'package:open_file/open_file.dart';
 import 'package:rooster/common/utils.dart';
-import 'package:background_fetch/background_fetch.dart';
+import 'package:uuid/uuid.dart';
+import 'package:workmanager/workmanager.dart';
 
 
 class AppDrawer extends StatelessWidget {
@@ -67,7 +67,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   User user;
-  int _status = 0;
 
   @override
   void initState() {
@@ -87,14 +86,6 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Chip(label: Text(user.autoReport ? 'autoReport: Enabled' : 'autoReport: Disabled', style: TextStyle(fontSize: 32)), backgroundColor: user.autoReport ? Colors.green : Colors.red,),
-              Chip(label: Text('Status: $_status', style: TextStyle(fontSize: 32),)),
-              MaterialButton(child: Text('Configure'), color: Colors.yellow[700], onPressed: () async {
-                await configureScheduledTask((s){
-                  appLog.i('reported at ${DateTime.now()}');
-                });
-                await user.setAutoReport(true);
-                await updateStatus();
-              },),
               Switch(value: user.autoReport, onChanged: onAutoReportChange,),
               MaterialButton(child: Text('Clear Log'), color: Colors.yellow[700], onPressed: () async {
                 final filePath = await getFilePath(logFileName);
@@ -106,28 +97,27 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  updateStatus() async {
-    int status = await BackgroundFetch.status;
-    setState(() {
-      _status = status;
-    });
+  updateStatus([bool status]) async {
+    if (status != null)
+      await user.setAutoReport(status);
+    setState(() {});
   }
 
   void onAutoReportChange(enabled) async {
-    await user.setAutoReport(enabled);
-    setState(() {});
+    updateStatus(enabled);
     if (enabled) {
-      await BackgroundFetch.start().then((int status) {
-        appLog.i('[BackgroundFetch] start success: $status');
-      }).catchError((e) {
-        appLog.e('[BackgroundFetch] start FAILURE: $e');
-      });
+      await Workmanager.registerPeriodicTask('RoosterTask_${Uuid().v4()}', 'RoosterTask',
+          tag: 'RoosterTask',
+          constraints: Constraints(
+              networkType: NetworkType.connected,
+              requiresBatteryNotLow: false,
+              requiresCharging: false,
+              requiresDeviceIdle: false,
+              requiresStorageNotLow: false
+          ));
     } else {
-      await BackgroundFetch.stop().then((int status) {
-        appLog.i('[BackgroundFetch] stop success: $status');
-      });
+      await Workmanager.cancelByTag('RoosterTask');
     }
-    await updateStatus();
   }
 
 

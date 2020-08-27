@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 
 void writeLog(){
   Workmanager.executeTask((taskName, inputData) async {
-    final f = File(await getFilePath(logFileName));
-    await appLog.i('reported at ${DateTime.now()}');
+    final f = File(await getFilePath('roosterTask.log'));
     f.writeAsStringSync('[INFO] reported at ${DateTime.now()}', mode: FileMode.writeOnlyAppend);
     return Future.value(true);
   });

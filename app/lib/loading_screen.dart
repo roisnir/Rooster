@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:rooster/common/log.dart';
 import 'package:rooster/login_page.dart';
 import 'package:rooster/home_screen.dart';
 import 'package:rooster/common/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -20,8 +22,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    addLogLine('Loading user...');
-    getUser().then((user) async {
+    () async {
+      addLogLine('Initializing firebase...');
+      await Firebase.initializeApp();
+      addLogLine('Loading user...');
+      // TODO: add authentication (maybe)
+      var user = await getUser();
       if (!user.authenticatedAsUser) {
         setState(() {
           if (user.userId == null) {
@@ -34,8 +40,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
         });
         user = await Navigator.of(context).push(MaterialPageRoute(
             builder: (ctx) => Scaffold(
-                  body: LoginPage(),
-                )));
+              body: LoginPage(),
+            )));
         setState(() {
           addLogLine('${user.userId} logged in');
         });
@@ -44,7 +50,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
       await user.persist();
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (ctx)=> HomePage(user: user)));
-    });
+
+    }();
   }
 
   @override

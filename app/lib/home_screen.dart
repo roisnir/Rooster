@@ -1,60 +1,10 @@
 import 'dart:io';
-
+import 'dart:async';
+import 'common/log.dart';
 import 'package:flutter/material.dart';
 import 'package:rooster/common/log.dart';
 import 'package:rooster/common/user.dart';
 import 'package:open_file/open_file.dart';
-import 'package:rooster/common/utils.dart';
-import 'package:uuid/uuid.dart';
-import 'package:workmanager/workmanager.dart';
-
-
-class AppDrawer extends StatelessWidget {
-  final User user;
-
-  AppDrawer(this.user);
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        // Important: Remove any padding from the ListView.
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text(user.userId),
-            decoration: BoxDecoration(
-              color: Colors.yellow,
-            ),
-          ),
-          ListTile(
-            title: Text('Home'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=> HomePage(user: user,)));
-            },
-          ),
-          ListTile(
-            title: Text('Log'),
-            onTap: () {
-              getFilePath(logFileName).then((filePath) {
-                print(filePath);
-                try {
-                  OpenFile.open(
-                      filePath, type: "text/plain",
-                      uti: "public.plain-text");
-                }
-                catch (ex) {
-                  appLog.e('Could not open log', ex);
-                }
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 
 
 class HomePage extends StatefulWidget {
@@ -67,31 +17,82 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   User user;
+  String logText = '';
+  Timer logUpdater;
 
   @override
   void initState() {
     super.initState();
     user = widget.user;
-    updateStatus();
+    loadLog();
+    logUpdater = Timer.periodic(Duration(seconds: 3), (timer) => loadLog());
+  }
+
+  loadLog() async {
+    final logPath = await getFilePath(logFileName);
+    final text = await File(logPath).readAsString();
+    setState(() {
+      logText = text;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      drawer: AppDrawer(user),
       body: Center(
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Chip(label: Text(user.autoReport ? 'autoReport: Enabled' : 'autoReport: Disabled', style: TextStyle(fontSize: 32)), backgroundColor: user.autoReport ? Colors.green : Colors.red,),
-              Switch(value: user.autoReport, onChanged: onAutoReportChange,),
-              MaterialButton(child: Text('Clear Log'), color: Colors.yellow[700], onPressed: () async {
-                final filePath = await getFilePath(logFileName);
-                final f = File(filePath);
-                f.writeAsStringSync('');
-              },)
+              Padding(padding: EdgeInsets.only(top: 100),),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Auto Report: ', style: TextStyle(fontSize: 24)),
+                  Switch(value: user.autoReportEnabled, onChanged: updateStatus,),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                  MaterialButton(child: Text('Clear Log'), color: Colors.yellow[700], onPressed: () async {
+                    final filePath = await getFilePath(logFileName);
+                    final f = File(filePath);
+                    f.writeAsStringSync('');
+                  },),
+                  MaterialButton(child: Text('Open Log'), color: Colors.yellow[700], onPressed: () async {
+                    final filePath = await getFilePath(logFileName);
+                    try {
+                      OpenFile.open(
+                          filePath, type: "text/plain",
+                          uti: "public.plain-text");
+                    }
+                    catch (ex) {
+                      appLog.e('Could not open log', ex);
+                    }
+                  },),
+                ].map((wgt) => Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: wgt,
+                  )).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(alignment: Alignment.centerLeft, child: Text('Log:', style: Theme.of(context).textTheme.subtitle1,),),
+              ),
+              Expanded(child: Container(
+                    color: Colors.grey[900],
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: RichText(
+                  text: TextSpan(text: logText),
+                ),),
+              ))
+
             ]
         ),
       ),
@@ -102,23 +103,9 @@ class _HomePageState extends State<HomePage> {
       await user.setAutoReport(status);
     setState(() {});
   }
+  @override
+  void dispose() {
 
-  void onAutoReportChange(enabled) async {
-    updateStatus(enabled);
-    if (enabled) {
-      await Workmanager.registerPeriodicTask('RoosterTask_${Uuid().v4()}', 'RoosterTask',
-          tag: 'RoosterTask',
-          constraints: Constraints(
-              networkType: NetworkType.connected,
-              requiresBatteryNotLow: false,
-              requiresCharging: false,
-              requiresDeviceIdle: false,
-              requiresStorageNotLow: false
-          ));
-    } else {
-      await Workmanager.cancelByTag('RoosterTask');
-    }
+    super.dispose();
   }
-
-
 }

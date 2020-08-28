@@ -26,6 +26,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       addLogLine('Initializing firebase...');
       await Firebase.initializeApp();
       addLogLine('Loading user...');
+      // TODO: add authentication (maybe)
       var user = await getUser();
       if (!user.authenticatedAsUser) {
         setState(() {

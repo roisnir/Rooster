@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:rooster/common/utils.dart';
 import 'package:cookie_jar/cookie_jar.dart';
@@ -10,38 +11,40 @@ class User {
   bool authenticatedAsUser;
   bool authenticatedAsCommander;
   List<SerializableCookie> cookies;
-  bool autoReport;
+  bool autoReportEnabled;
+  DocumentReference _ref;
 
   User(this.userId, {
     this.authenticatedAsUser = false,
     this.authenticatedAsCommander = false,
     this.cookies,
-    this.autoReport = false
-  });
+    this.autoReportEnabled = false
+  }){
+    _ref = FirebaseFirestore.instance.doc('users/$userId');
+  }
 
 
   static Future<User> load() async {
-    final cookiesData = await storage.read(key: 'cookies');
+    final userId = await SharedPreferences.getInstance().then((prefs) => prefs.getString('userId'));
+    final user = (await FirebaseFirestore.instance.doc('users/$userId').get()).data();
     List<SerializableCookie> cookies;
-    if (cookiesData != null)
-      cookies = jsonDecode(cookiesData)
-        .map<SerializableCookie>((cs)=>SerializableCookie.fromJson(cs)).toList();
-    final prefs = await SharedPreferences.getInstance();
+    if (user.containsKey('cookies'))
+      cookies = user['cookies'].map<SerializableCookie>((cs)=>SerializableCookie.fromJson(cs)).toList();
     return User(
-        prefs.getString('userId'),
+        userId,
         cookies: cookies,
-        autoReport: prefs.getBool('autoReport')
+      autoReportEnabled: user['autoReportEnabled']
     );
   }
 
   setAutoReport(bool _autoReport) async {
-    autoReport = _autoReport;
-    await SharedPreferences.getInstance().then((value) => value.setBool('autoReport', autoReport));
+    autoReportEnabled = _autoReport;
+    await _ref.set({'autoReportEnabled': autoReportEnabled}, SetOptions(merge: true));
   }
 
   setCookies(List<SerializableCookie> _cookies) async {
     cookies = _cookies;
-    await storage.write(key: 'cookies', value: jsonEncode(cookies.map((c) => c.toJson()).toList()));
+    await _ref.set({'cookies': cookies.map((c) => c.toJson()).toList()}, SetOptions(merge: true));
   }
 
   setUserId(String _userId) async {
@@ -50,9 +53,12 @@ class User {
   }
 
   persist() async {
-    await setCookies(cookies);
     await setUserId(userId);
-    await setAutoReport(autoReport);
+    await _ref.set({
+      'autoReportEnabled': autoReportEnabled,
+      'cookies': cookies.map((c) => c.toJson()).toList(),
+    },
+        SetOptions(merge: true));
   }
 }
 

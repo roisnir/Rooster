@@ -40,7 +40,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         });
         user = await Navigator.of(context).push(MaterialPageRoute(
             builder: (ctx) => Scaffold(
-              body: LoginPage(),
+              body: LoginPage(user.userId),
             )));
         setState(() {
           addLogLine('${user.userId} logged in');

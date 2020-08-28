@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
+import 'package:rooster/common/log.dart';
 import 'package:rooster/common/utils.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,28 +13,35 @@ class User {
   bool authenticatedAsCommander;
   List<SerializableCookie> cookies;
   bool autoReportEnabled;
+  DateTime lastReportTime;
   DocumentReference _ref;
 
-  User(this.userId, {
+  User({
+    this.userId,
     this.authenticatedAsUser = false,
     this.authenticatedAsCommander = false,
     this.cookies,
-    this.autoReportEnabled = false
+    this.autoReportEnabled = false,
+    this.lastReportTime
   }){
+    cookies ??= [];
     _ref = FirebaseFirestore.instance.doc('users/$userId');
   }
 
 
   static Future<User> load() async {
     final userId = await SharedPreferences.getInstance().then((prefs) => prefs.getString('userId'));
+    if (userId == null)
+      return User();
     final user = (await FirebaseFirestore.instance.doc('users/$userId').get()).data();
     List<SerializableCookie> cookies;
     if (user.containsKey('cookies'))
       cookies = user['cookies'].map<SerializableCookie>((cs)=>SerializableCookie.fromJson(cs)).toList();
     return User(
-        userId,
+        userId: userId,
         cookies: cookies,
-      autoReportEnabled: user['autoReportEnabled']
+        autoReportEnabled: user['autoReportEnabled'],
+        lastReportTime: user.containsKey('lastReportedAt') ? user['lastReportedAt']?.toDate() : null
     );
   }
 
@@ -73,8 +81,12 @@ Future<User> getUser() async {
     print('Sending Request with cookie: ' + req.headers['Cookie']);
   }
   final response = await Response.fromStream(await req.send());
-  if (response.headers.containsKey('set-cookie') && response.headers['set-cookie'] != null)
-    user.cookies = parseSetCookie(response.headers['set-cookie']);
+  if (response.headers.containsKey('set-cookie') && response.headers['set-cookie'] != null) {
+    if (user.cookies.any((element) => element.cookie.name == 'AppCookie') && !response.headers['set-cookie'].contains('AppCookie'))
+      appLog.w("User has AppCookie but set-cookie doesn't. ignoring new cookies");
+    else
+      user.cookies = parseSetCookie(response.headers['set-cookie']);
+  }
   final result = jsonDecode(response.body);
   user.authenticatedAsUser = result['isUserAuth'];
   user.authenticatedAsCommander = result['isCommanderAuth'];

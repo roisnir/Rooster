@@ -10,6 +10,10 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 
 class LoginPage extends StatefulWidget {
+  final String userId;
+
+  LoginPage([this.userId]);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -19,11 +23,12 @@ class _LoginPageState extends State<LoginPage> {
   final cookieManager = WebviewCookieManager();
   Timer cookieChecker;
   Map<String, SerializableCookie> cookies = {};
-  String userId = '';
+  String userId;
 
   @override
   void initState() {
     super.initState();
+    userId = widget.userId ?? '';
     cookieManager.clearCookies();
     cookieChecker = Timer.periodic(Duration(seconds: 1), (timer) {
       scrapeData();
@@ -33,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   returnUser() {
-    Navigator.of(context).pop(User(userId, authenticatedAsUser: true, cookies: cookies.values.toList()));
+    Navigator.of(context).pop(User(userId: userId, authenticatedAsUser: true, cookies: cookies.values.toList()));
   }
 
   scrapeData() async {
@@ -44,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     String result;
     try {
       result = await controller.evaluateJavascript(
-          "try {document.getElementsByName('tz')[0].value} catch (error){null}");
+          "try {document.getElementsByName('tz')[0].value} catch (error){error}");
     }
     catch (ex){
     }
@@ -68,7 +73,15 @@ class _LoginPageState extends State<LoginPage> {
         WebView(
           initialUrl: baseUrl,
           javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (ctrl)=>controller=ctrl,
+          onWebViewCreated: (ctrl)=> controller=ctrl,
+          onPageStarted: (url){
+            if (userId.length > 0) {
+              Future.delayed(Duration(seconds: 2), () {
+                controller.evaluateJavascript(
+                    "try {document.getElementsByName('tz')[0].value = $userId} catch (error){error}");
+              });
+            }
+          },
         ),
         DraggableScrollableSheet(
           initialChildSize: 0.15,

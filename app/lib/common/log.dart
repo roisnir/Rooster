@@ -39,6 +39,31 @@ class MultipleOutputs extends LogOutput {
 }
 
 
+class LogPrinter extends PrettyPrinter {
+  LogPrinter({
+    methodCount = 1,
+    errorMethodCount = 8,
+    lineLength = 120,
+    colors = true,
+    printEmojis = true,
+    printTime = false,
+  }):super(
+      methodCount: methodCount,
+      errorMethodCount: errorMethodCount,
+      lineLength: lineLength,
+      colors: colors,
+      printEmojis: printEmojis,
+      printTime: printTime
+  );
+
+  @override
+  List<String> log(LogEvent event) {
+    var lines = super.log(event);
+    return lines..add('');
+  }
+}
+
+
 class AppLogger implements Logger {
   final String logName;
   Future<Logger> _logger;
@@ -47,8 +72,8 @@ class AppLogger implements Logger {
     _logger = getFilePath(logName).then((logPath){
       final logFile = File(logPath);
       return Logger(
-        printer: PrettyPrinter(
-          lineLength: 30,
+        printer: LogPrinter(
+          lineLength: 20,
           colors: false,
           printTime: true,
           printEmojis: false

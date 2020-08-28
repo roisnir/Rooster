@@ -36,6 +36,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Widget buildBox(List<Widget> items){
+    return Container(
+
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[900]),
+      child: Column(children: items,),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +56,14 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Auto Report: ', style: TextStyle(fontSize: 24)),
-                  Switch(value: user.autoReportEnabled, onChanged: updateStatus,),
+                  buildBox([
+                    Text('Auto Report', style: TextStyle(fontSize: 24)),
+                    Switch(value: user.autoReportEnabled, onChanged: updateStatus,)
+                  ]),
+                  buildBox([
+                    Text('Last Report', style: TextStyle(fontSize: 24)),
+                    Text(user.lastReportTime.toString())
+                  ]),
                 ],
               ),
               Padding(

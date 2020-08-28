@@ -38,9 +38,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildBox(List<Widget> items){
     return Container(
-
+      width: 140,
+      height: 140,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[900]),
-      child: Column(children: items,),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: items,),
     );
   }
 
@@ -54,15 +57,18 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Padding(padding: EdgeInsets.only(top: 100),),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   buildBox([
-                    Text('Auto Report', style: TextStyle(fontSize: 24)),
+                    Text('Auto Report', style: TextStyle(fontSize: 22)),
                     Switch(value: user.autoReportEnabled, onChanged: updateStatus,)
                   ]),
                   buildBox([
-                    Text('Last Report', style: TextStyle(fontSize: 24)),
-                    Text(user.lastReportTime.toString())
+                    Text('Last Report', style: TextStyle(fontSize: 22)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 17.0),
+                      child: Text(user.lastReportTime?.toString() ?? 'Never Reported'),
+                    )
                   ]),
                 ],
               ),

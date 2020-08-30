@@ -26,15 +26,11 @@ class ReportLog{
     }
 }
 
-function sendRequest(url, method, headers, manipulations=(req)=>{}){
+function sendRequest(options, manipulations=(req)=>{}){
     return new Promise((resolve, reject) => {
         const res = {data: ''};
         const req = https.request(
-            url,
-            {
-                method: method,
-                header: headers
-            },
+            options,
             (_res) => {
                 _res.setEncoding('utf8');
                 _res.on('data', (chunk) => {
@@ -53,19 +49,22 @@ function sendRequest(url, method, headers, manipulations=(req)=>{}){
 }
 
 async function reportUser (user) {
-    console.log(user);
-    const cookieString = user.cookies.map((c)=>c.split(';')[0]).join(',');
+    const cookieString = user.cookies.map((c)=>c.split(';')[0]).join(';');
     const formData = new FormData();
     formData.append('MainCode', '01');
     formData.append('SecondaryCode', '01');
     try {
         const {response, data} = await sendRequest(
-            'https://one.prat.idf.il/api/Attendance/InsertPersonalReport',
-            'POST',
-            formData.getHeaders({Cookie: cookieString}),
+            {
+                hostname: 'one.prat.idf.il',
+                port: 443,
+                path: '/api/Attendance/InsertPersonalReport',
+                method: 'POST',
+                headers: formData.getHeaders({Cookie: cookieString})
+            },
             (req) => formData.pipe(req)
         );
-        if (!200 <= response.statusCode < 300)
+        if (!(200 <= response.statusCode < 300))
             return new ReportLog(user, false, `Request failed with error code ${response.statusCode}: ${data}`);
         console.log(`Status: ${response.statusCode}`);
         console.log(`Headers: ${JSON.stringify(response.headers)}`);

@@ -59,9 +59,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.only(left: 4, top: 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: log.map<Widget>((line) => Text(line)).toList(),
+        child: Stack(
+          children: <Widget>[
+            Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: log.map<Widget>((line) => Text(line)).toList(),),
+            Center(child: Image.asset('graphics/rooster_yellow.png'))
+          ],
         ),
       ),
     );

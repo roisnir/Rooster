@@ -63,7 +63,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: log.map<Widget>((line) => Text(line)).toList(),),
-            Center(child: Image.asset('assets.graphics/rooster_yellow.png'))
+            Center(child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Image.asset('assets/graphics/rooster_yellow.png'),
+            ))
           ],
         ),
       ),

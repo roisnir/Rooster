@@ -23,6 +23,6 @@ class Status {
       statusCode: json['statusCode'],
       statusDescription: json['statusDescription'],
       secondaries: json.containsKey('secondaries')
-          ? json['secondaries'].map<Status>((subJson) => Status.fromJson(json)).toList() : []
+          ? json['secondaries'].map<Status>((subJson) => Status.fromJson(subJson)).toList() : []
   );
 }

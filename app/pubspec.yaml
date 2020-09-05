@@ -58,10 +58,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets.graphics/rooster_black.png
-    - assets.graphics/rooster_yellow.png
+    - assets/
+    - assets/strings/
+    - assets/graphics/
 
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets.graphics/rooster_icon_256.png"
+  image_path: "assets/graphics/rooster_icon_256.png"

@@ -1,12 +1,12 @@
-import 'dart:convert';
-
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rooster/common/scheduledReport.dart';
+import 'package:rooster/common/scheduled_report.dart';
 import 'package:rooster/common/user.dart';
+import 'package:rooster/common/utils.dart';
 import 'package:rooster/schedule_report_dialog.dart';
-
 import 'common/status.dart';
 
 class Dashboard extends StatefulWidget {
@@ -20,12 +20,19 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   User user;
-  List<ScheduledReport> scheduled;
+  Future<List<ScheduledReport>> scheduled;
 
   @override
   void initState() {
     super.initState();
     user = widget.user;
+    scheduled = FirebaseFirestore.instance
+        .collection('users/${widget.user.userId}/scheduledReports')
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(today()))
+        .get()
+        .then((queryRes) => queryRes.docs
+        .map<ScheduledReport>((doc) => ScheduledReport.fromDoc(doc.data())))
+    .then((value) => value.toList());
   }
 
   Widget buildBox(List<Widget> items) {
@@ -114,13 +121,16 @@ class _DashboardState extends State<Dashboard> {
                                     children: [
                                       Icon(Icons.error_outline),
                                       Text('An error occurred, please try again later.'),
-                                      RaisedButton(child: Text('OK'), onPressed: (){Navigator.of(context).pop()},)
+                                      RaisedButton(child: Text('OK'), onPressed: (){Navigator.of(context).pop();},)
                                     ],
                                   ),),
                                 ));
                       });
                       if (res != null){
-
+                        final _scheduled = await scheduled;
+                        setState(() {
+                          _scheduled.add(res);
+                        });
                       }
                     },)
                   ],
@@ -129,10 +139,27 @@ class _DashboardState extends State<Dashboard> {
               Expanded(
                   child: Container(
                     color: Colors.grey[900],
-                    child: ListView.separated(
-                        itemBuilder: (ctx, i)=> ListTile(title: Text(i.toString()),),
-                        separatorBuilder: (ctx, i) => Divider(),
-                        itemCount: 3),
+                    child: FutureBuilder<List<ScheduledReport>>(
+                      future: scheduled,
+                      builder: (ctx, snapshot) {
+                        if (snapshot.hasError)
+                          return Center(child: Icon(Icons.error_outline));
+                        if (!snapshot.hasData)
+                          return Center(child: CircularProgressIndicator(),);
+                        final _scheduled = snapshot.data;
+                        return ListView.separated(
+                          itemBuilder: (ctx, i){
+                            final report = _scheduled[i];
+                            return ListTile(
+                              title: Text(report.date.toIso8601String()),
+                              trailing: Text('primaryStatus: ${report.primaryStatus}'),
+                              subtitle: Text('scondaryStatus: ${report.secondaryStatus}'),
+                          );
+                          },
+                          separatorBuilder: (ctx, i) => Divider(),
+                          itemCount: _scheduled.length);
+                      },
+                    ),
                   ))
             ]),
       ),

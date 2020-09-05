@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             DrawerHeader(
-              child: Image.asset('assets.graphics/rooster_yellow.png'),
+              child: Image.asset('assets/graphics/rooster_yellow.png'),
             ),
             ListTile(title: Text('Home'), onTap: (){
               setState(() {

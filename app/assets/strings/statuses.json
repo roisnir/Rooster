@@ -1,0 +1,329 @@
+[
+  {
+    "statusCode": "02",
+    "statusDescription": "מחוץ ליחידה",
+    "secondaries": [
+      {
+        "statusCode": "05",
+        "statusDescription": "בתפקיד מחוץ ליחידה",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 0,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": true
+      },
+      {
+        "statusCode": "25",
+        "statusDescription": "כוננות",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 0,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": true
+      },
+      {
+        "statusCode": "09",
+        "statusDescription": "אחרי תורנות \\ משמרת",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 1,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": true
+      },
+      {
+        "statusCode": "03",
+        "statusDescription": "עובד משמרות",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 2,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "13",
+        "statusDescription": "הפניה רפואית",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 2,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "16",
+        "statusDescription": "משמרת ערב",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 3,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "02",
+        "statusDescription": "אבט\"ש",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 4,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "20",
+        "statusDescription": "סבב קו",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 7,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "23",
+        "statusDescription": "יום פרט",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 8,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      }
+    ],
+    "icon": "img/location.png",
+    "inBase": false,
+    "pratPrioritization": 2
+  },
+  {
+    "statusCode": "04",
+    "statusDescription": "חופשה שנתית ",
+    "secondaries": [
+      {
+        "statusCode": "01",
+        "statusDescription": "חופשה שנתית",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 0,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "06",
+        "statusDescription": "חג עדתי",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 3,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "11",
+        "statusDescription": "אזכרה - קרבה ראשונה",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 3,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      }
+    ],
+    "icon": "img/beachHoliday.png",
+    "inBase": false,
+    "pratPrioritization": 3
+  },
+  {
+    "statusCode": "05",
+    "statusDescription": "חופשת מחלה",
+    "secondaries": [
+      {
+        "statusCode": "01",
+        "statusDescription": "חופשת מחלה (גימלים)",
+        "hasFiles": true,
+        "hasText": false,
+        "pratPrioritization": 0,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "08",
+        "statusDescription": "יום ד",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 3,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": false
+      },
+      {
+        "statusCode": "17",
+        "statusDescription": "בידוד",
+        "hasFiles": false,
+        "hasText": false,
+        "pratPrioritization": 3,
+        "notifications": {
+          "commanderDaysQuotaNotification": null,
+          "hafshshDays": null,
+          "vacationDriver": null,
+          "meyuhedetKeva": null,
+          "meyuhedetHitmahut": null,
+          "annualVacationHovaQuota": null,
+          "annualVacationKevaQuota": null,
+          "dDaysQuota": null,
+          "initialTrainingQuota": null,
+          "alertText": ""
+        },
+        "canEditNote": true
+      }
+    ],
+    "icon": "img/pills.png",
+    "inBase": false,
+    "pratPrioritization": 4
+  }
+]

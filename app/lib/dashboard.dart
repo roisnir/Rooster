@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:rooster/common/scheduledReport.dart';
 import 'package:rooster/common/user.dart';
+import 'package:rooster/schedule_report_dialog.dart';
+
+import 'common/status.dart';
 
 class Dashboard extends StatefulWidget {
   final User user;
@@ -13,6 +20,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   User user;
+  List<ScheduledReport> scheduled;
 
   @override
   void initState() {
@@ -87,18 +95,33 @@ class _DashboardState extends State<Dashboard> {
                       'Scheduled reports',
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    IconButton(icon: Icon(Icons.add), onPressed: (){
-                      showDialog(context: context, builder: (ctx) =>
-                        AlertDialog(
-                          title: Text('Schedule Report'),
-                          content: Column(children: [
-                            OutlineButton(child: Text(DateTime.now().toString()), onPressed: () {showDatePicker(context: ctx, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime.now().add(Duration(days: 365)));},),
-                            DropdownButton(items: ['1', '2', '3'].map((e) => DropdownMenuItem(value: e, child: Text(e),)).toList(), onChanged: (v){},),
-                            DropdownButton(items: ['1', '2', '3'].map((e) => DropdownMenuItem(value: e, child: Text(e),)).toList(), onChanged: (v){},),
-                            ButtonBar(children: [FlatButton(child: Text('Add'), onPressed: (){},), FlatButton(child: Text('Cancel'), onPressed: (){},)],)
-                          ],),
-                        )
-                      );
+                    IconButton(icon: Icon(Icons.add), onPressed: () async {
+                      final statuses = await rootBundle.loadStructuredData(
+                          'assets/strings/statuses.json',
+                          (jsonStr) async => parseStatuses(jsonStr));
+                      ScheduledReport res = await showDialog(
+                          context: context,
+                          builder: (ctx) =>
+                              ReportScheduleDialog(
+                                statuses: statuses,
+                                userId: user.userId,))
+                          .catchError((err){
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                  title: Text('Error!'),
+                                  content: Center(child: Column(
+                                    children: [
+                                      Icon(Icons.error_outline),
+                                      Text('An error occurred, please try again later.'),
+                                      RaisedButton(child: Text('OK'), onPressed: (){Navigator.of(context).pop()},)
+                                    ],
+                                  ),),
+                                ));
+                      });
+                      if (res != null){
+
+                      }
                     },)
                   ],
                 ),

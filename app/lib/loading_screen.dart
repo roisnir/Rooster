@@ -4,7 +4,6 @@ import 'package:rooster/common/log.dart';
 import 'package:rooster/login_page.dart';
 import 'package:rooster/home_screen.dart';
 import 'package:rooster/common/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override

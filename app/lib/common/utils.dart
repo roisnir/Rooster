@@ -7,7 +7,6 @@ const storage = FlutterSecureStorage();
 const baseUrl = 'https://one.prat.idf.il';
 
 List<SerializableCookie> parseSetCookie(String setCookie){
-  final allSetCookie = setCookie;
   final sep = RegExp(r"(,)[^\s_]");
   final cookies = <SerializableCookie>[];
   String tmp;

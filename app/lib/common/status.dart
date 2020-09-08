@@ -19,6 +19,12 @@ class Status {
     @required this.statusDescription,
     @required this.secondaries});
 
+
+  @override
+  String toString() {
+    return statusDescription;
+  }
+
   Status.fromJson(Map<String, dynamic> json) : this(
       statusCode: json['statusCode'],
       statusDescription: json['statusDescription'],

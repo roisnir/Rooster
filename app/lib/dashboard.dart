@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,19 +24,27 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   User user;
   Future<List<ScheduledReport>> scheduled;
+  Future<Map<String, Status>> _statuses;
 
   @override
   void initState() {
     super.initState();
     user = widget.user;
-    scheduled = FirebaseFirestore.instance
-        .collection('users/${widget.user.userId}/scheduledReports')
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(today()))
-        .get()
-        .then((queryRes) =>
-        queryRes.docs
-            .map<ScheduledReport>((doc) => ScheduledReport.fromDoc(doc.data())))
-        .then((value) => value.toList());
+    scheduled = loadScheduled();
+    _statuses = rootBundle.loadStructuredData(
+        'assets/strings/statuses.json',
+            (jsonStr) async => parseStatuses(jsonStr));
+  }
+
+  Future<List<ScheduledReport>> loadScheduled() {
+    return FirebaseFirestore.instance
+      .collection('users/${widget.user.userId}/scheduledReports')
+      .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(today()))
+      .get()
+      .then((queryRes) =>
+      queryRes.docs
+          .map<ScheduledReport>((doc) => ScheduledReport.fromDoc(doc.data())))
+      .then((value) => value.toList());
   }
 
   Widget buildBox(List<Widget> items) {
@@ -126,25 +135,50 @@ class _DashboardState extends State<Dashboard> {
               Expanded(
                   child: Container(
                     color: Colors.grey[900],
-                    child: FutureBuilder<List<ScheduledReport>>(
-                      future: scheduled,
+                    child: FutureBuilder<List<dynamic>>(
+                      future: Future.wait([scheduled, _statuses]),
                       builder: (ctx, snapshot) {
                         if (snapshot.hasError) {
-                          appLog.e('error', snapshot.error, (snapshot.error as TypeError)?.stackTrace);
+                          appLog.e('error', snapshot.error, (snapshot.error as Error)?.stackTrace);
                           return Center(child: Icon(Icons.error_outline));
                         }
                         if (!snapshot.hasData)
                           return Center(child: CircularProgressIndicator(),);
-                        final _scheduled = snapshot.data;
+                        List<ScheduledReport> _scheduled = snapshot.data[0];
+                        Map<String, Status> statuses = snapshot.data[1];
                         return ListView.separated(
                             itemBuilder: (ctx, i) {
                               final report = _scheduled[i];
                               return ListTile(
-                                title: Text(DateFormat('dd/MM/yy').format(report.date)),
-                                trailing: Text(
-                                    'primaryStatus: ${report.primaryStatus}'),
-                                subtitle: Text('scondaryStatus: ${report
-                                    .secondaryStatus}'),
+                                title: Row(
+                                  children: [
+                                    Text('${DateFormat('dd/MM/yy').format(report.date)}  -  ${statuses[report.primaryStatus]}'),
+                                  ],
+                                ),
+//                                isThreeLine: true,
+                                trailing: IconButton(icon: Icon(Icons.delete), onPressed: () async {
+                                  final bool res = await showDialog(context: context, child: SimpleDialog(
+                                    title: Text('Are You Sure?'),
+                                    children: [ButtonBar(
+                                      alignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        FlatButton(child: Text('No'), onPressed: (){Navigator.of(context).pop(false);},),
+                                        FlatButton(child: Text('Yes'), onPressed: (){Navigator.of(context).pop(true);})
+                                    ],)],
+                                  ));
+                                  if (!(res ?? false))
+                                    return;
+                                  final formattedDate = DateFormat('yyyy-MM-dd')
+                                      .format(report.date);
+                                  FirebaseFirestore.instance
+                                      .collection(
+                                      'users/${widget.user.userId}/scheduledReports')
+                                      .doc(formattedDate).delete().then((value) {
+                                        scheduled = loadScheduled();
+                                        setState((){});
+                                      });
+                                },),
+                                subtitle: Text('${statuses[report.primaryStatus].secondaries.singleWhere((s) => s.statusCode == report.secondaryStatus)}'),
                               );
                             },
                             separatorBuilder: (ctx, i) => Divider(),
@@ -159,9 +193,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget get addReportButton {
     return IconButton(icon: Icon(Icons.add), onPressed: () async {
-      final statuses = await rootBundle.loadStructuredData(
-          'assets/strings/statuses.json',
-              (jsonStr) async => parseStatuses(jsonStr));
+      final statuses = await _statuses;
       ScheduledReport res = await showDialog(
           context: context,
           builder: (ctx) =>

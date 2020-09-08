@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ScheduledReport {
   final DateTime date;
   final String primaryStatus;
@@ -7,5 +9,5 @@ class ScheduledReport {
 
   ScheduledReport.fromDoc(
       Map<String, dynamic> doc
-      ) : this(doc['date'], doc['primaryStatus'], doc['secondaryStatus']);
+      ) : this(doc['date'].toDate(), doc['primaryStatus'], doc['secondaryStatus']);
 }

@@ -19,7 +19,7 @@ class ReportScheduleDialog extends StatefulWidget {
 class _ReportScheduleDialogState extends State<ReportScheduleDialog> {
   String primaryStatusCode;
   String secondaryStatusCode;
-  DateTime selectedDate = today().add(Duration(days: 1));
+  DateTime selectedDate = DateTime.now().add(Duration(days: 1));
   bool isLoading = false;
   String validationMsg = '';
 
@@ -79,14 +79,14 @@ class _ReportScheduleDialogState extends State<ReportScheduleDialog> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           OutlineButton(
-            child: Text(DateFormat('yyyy-MM-dd').format(selectedDate)),
+            child: Text(DateFormat('yyyy-MM-dd').format(selectedDate ?? tomorrow)),
             onPressed: () {
               showDatePicker(
                       context: context,
-                      initialDate: today().add(Duration(days: 1)),
-                      firstDate: today().add(Duration(days: 1)),
+                      initialDate: tomorrow,
+                      firstDate: tomorrow,
                       lastDate: DateTime.now().add(Duration(days: 365)))
-                  .then((value) => selectedDate = value);
+                  .then((value) => setState((){selectedDate = value;}));
             },
           ),
           primariesDropdown,
@@ -118,7 +118,7 @@ class _ReportScheduleDialogState extends State<ReportScheduleDialog> {
                   setState(() {
                     isLoading = true;
                   });
-                  final scheduledReport = ScheduledReport(selectedDate,
+                  final scheduledReport = ScheduledReport(selectedDate ?? tomorrow,
                       primaryStatusCode, secondaryStatusCode);
                   final formattedDate = DateFormat('yyyy-MM-dd')
                       .format(scheduledReport.date);
@@ -148,4 +148,6 @@ class _ReportScheduleDialogState extends State<ReportScheduleDialog> {
       ),
     );
   }
+
+  DateTime get tomorrow => today().add(Duration(days: 1));
 }

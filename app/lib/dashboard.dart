@@ -24,16 +24,22 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   User user;
   Future<List<ScheduledReport>> scheduled;
-  Future<Map<String, Status>> _statuses;
+  Map<String, Status> _statuses;
+  bool _isLoadingStatuses = true;
 
   @override
   void initState() {
     super.initState();
     user = widget.user;
     scheduled = loadScheduled();
-    _statuses = rootBundle.loadStructuredData(
+    rootBundle.loadStructuredData(
         'assets/strings/statuses.json',
-            (jsonStr) async => parseStatuses(jsonStr));
+            (jsonStr) async => parseStatuses(jsonStr)).then((value) {
+              setState(() {
+                _statuses = value;
+                _isLoadingStatuses = false;
+              });
+            });
   }
 
   Future<List<ScheduledReport>> loadScheduled() {
@@ -135,8 +141,8 @@ class _DashboardState extends State<Dashboard> {
               Expanded(
                   child: Container(
                     color: Colors.grey[900],
-                    child: FutureBuilder<List<dynamic>>(
-                      future: Future.wait([scheduled, _statuses]),
+                    child: FutureBuilder<List<ScheduledReport>>(
+                      future: scheduled,
                       builder: (ctx, snapshot) {
                         if (snapshot.hasError) {
                           appLog.e('error', snapshot.error, (snapshot.error as Error)?.stackTrace);
@@ -144,15 +150,14 @@ class _DashboardState extends State<Dashboard> {
                         }
                         if (!snapshot.hasData)
                           return Center(child: CircularProgressIndicator(),);
-                        List<ScheduledReport> _scheduled = snapshot.data[0];
-                        Map<String, Status> statuses = snapshot.data[1];
+                        List<ScheduledReport> _scheduled = snapshot.data;
                         return ListView.separated(
                             itemBuilder: (ctx, i) {
                               final report = _scheduled[i];
                               return ListTile(
                                 title: Row(
                                   children: [
-                                    Text('${DateFormat('dd/MM/yy').format(report.date)}  -  ${statuses[report.primaryStatus]}'),
+                                    Text('${DateFormat('dd/MM/yy').format(report.date)}  -  ${_statuses[report.primaryStatus]}'),
                                   ],
                                 ),
 //                                isThreeLine: true,
@@ -178,7 +183,7 @@ class _DashboardState extends State<Dashboard> {
                                         setState((){});
                                       });
                                 },),
-                                subtitle: Text('${statuses[report.primaryStatus].secondaries.singleWhere((s) => s.statusCode == report.secondaryStatus)}'),
+                                subtitle: Text('${_statuses[report.primaryStatus].secondaries.singleWhere((s) => s.statusCode == report.secondaryStatus)}'),
                               );
                             },
                             separatorBuilder: (ctx, i) => Divider(),
@@ -193,12 +198,11 @@ class _DashboardState extends State<Dashboard> {
 
   Widget get addReportButton {
     return IconButton(icon: Icon(Icons.add), onPressed: () async {
-      final statuses = await _statuses;
       ScheduledReport res = await showDialog(
           context: context,
           builder: (ctx) =>
               ReportScheduleDialog(
-                statuses: statuses,
+                statuses: _statuses,
                 userId: user.userId,))
           .catchError((err) {
         showDialog(

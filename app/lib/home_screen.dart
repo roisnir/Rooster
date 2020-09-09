@@ -14,12 +14,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int curScreenIndex = 0;
+//  List<Widget Function() > screens;
   List<Widget> screens;
 
   @override
   void initState() {
     super.initState();
     screens = [
+//      () => Dashboard(user: widget.user,),
+//      () => LogScreen()
       Dashboard(user: widget.user,),
       LogScreen()
     ];
@@ -50,6 +53,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+//      body: screens[curScreenIndex](),
       body: screens[curScreenIndex],
     );
   }

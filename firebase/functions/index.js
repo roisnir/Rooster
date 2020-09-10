@@ -48,11 +48,11 @@ function sendRequest(options, manipulations=(req)=>{}){
     });
 }
 
-async function reportUser (user) {
+async function reportUser (user, mainCode='01', secondaryCode='01') {
     const cookieString = user.cookies.map((c)=>c.split(';')[0]).join(';');
     const formData = new FormData();
-    formData.append('MainCode', '01');
-    formData.append('SecondaryCode', '01');
+    formData.append('MainCode', mainCode);
+    formData.append('SecondaryCode', secondaryCode);
     try {
         const {response, data} = await sendRequest(
             {
@@ -64,7 +64,7 @@ async function reportUser (user) {
             },
             (req) => formData.pipe(req)
         );
-        if (!(200 <= response.statusCode < 300))
+        if (!(response.statusCode >= 200 && response.statusCode < 300))
             return new ReportLog(user, false, `Request failed with error code ${response.statusCode}: ${data}`);
         console.log(`Status: ${response.statusCode}`);
         console.log(`Headers: ${JSON.stringify(response.headers)}`);
@@ -88,7 +88,13 @@ async function reportAllUsers (){
         try {
             let user = userDoc.data();
             user.userId = userDoc.id;
-            let result = await reportUser(user);
+            let todayStr = moment().format('YYYY-MM-DD');
+            let scheduled = (await db.doc(`users/${userDoc.id}/scheduledReports/${todayStr}`).get()).data();
+            let result;
+            if (typeof scheduled !== 'undefined')
+                result = await reportUser(user, scheduled.primaryStatus, scheduled.secondatyStatus);
+            else
+                result = await reportUser(user);
             if (result.status) {
                 await userDoc.ref.set({lastReportedAt: admin.firestore.Timestamp.fromMillis(result.time.valueOf())}, {merge: true});
                 functions.logger.info(result.toString());

@@ -7,7 +7,6 @@ const storage = FlutterSecureStorage();
 const baseUrl = 'https://one.prat.idf.il';
 
 List<SerializableCookie> parseSetCookie(String setCookie){
-  final allSetCookie = setCookie;
   final sep = RegExp(r"(,)[^\s_]");
   final cookies = <SerializableCookie>[];
   String tmp;
@@ -19,4 +18,9 @@ List<SerializableCookie> parseSetCookie(String setCookie){
   }
   cookies.add(SerializableCookie(Cookie.fromSetCookieValue(setCookie)));
   return cookies;
+}
+
+DateTime today(){
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day);
 }

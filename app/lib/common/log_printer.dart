@@ -2,7 +2,7 @@ import 'package:logger/logger.dart';
 
 class AppLogPrinter extends PrettyPrinter {
   AppLogPrinter({
-    methodCount = 1,
+    methodCount = 3,
     errorMethodCount = 8,
     lineLength = 120,
     colors = true,
@@ -10,7 +10,7 @@ class AppLogPrinter extends PrettyPrinter {
     printLevelStrings = true,
     printTime = false,
   }):super(
-      methodCount: methodCount + 1,
+      methodCount: methodCount + 2,
       errorMethodCount: errorMethodCount,
       lineLength: lineLength,
       colors: colors,
@@ -25,9 +25,7 @@ class AppLogPrinter extends PrettyPrinter {
   @override
   String formatStackTrace(StackTrace stackTrace, int methodCount) {
     final lines = super.formatStackTrace(stackTrace, methodCount).split('\n');
-    if (lines.last.contains('LogPrinter.log'))
-      lines.removeAt(lines.length-1);
-    return lines.join('\n');
+    return lines.sublist(2).join('\n');
   }
 
   @override

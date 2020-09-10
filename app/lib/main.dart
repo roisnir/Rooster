@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:workmanager/workmanager.dart';
 import 'common/log.dart';
-import 'common/log.dart';
-import 'common/log.dart';
 import 'loading_screen.dart';
 import 'package:flutter/material.dart';
 

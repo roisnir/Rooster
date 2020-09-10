@@ -4,7 +4,6 @@ import 'package:rooster/common/log.dart';
 import 'package:rooster/login_page.dart';
 import 'package:rooster/home_screen.dart';
 import 'package:rooster/common/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -64,7 +63,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: log.map<Widget>((line) => Text(line)).toList(),),
-            Center(child: Image.asset('graphics/rooster_yellow.png'))
+            Center(child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Image.asset('assets/graphics/rooster_yellow.png'),
+            ))
           ],
         ),
       ),

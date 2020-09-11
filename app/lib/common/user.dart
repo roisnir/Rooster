@@ -28,6 +28,14 @@ class User {
     _ref = FirebaseFirestore.instance.doc('users/$userId');
   }
 
+  Future<void> reloadReportSettings() async {
+    final userData = (await FirebaseFirestore.instance.doc('users/$userId').get()).data();
+    if (userData.containsKey('autoReportEnabled'))
+      autoReportEnabled = userData['autoReportEnabled'];
+    if (userData.containsKey('lastReportedAt')) {
+      lastReportTime = userData['lastReportedAt']?.toDate();
+    }
+  }
 
   static Future<User> load() async {
     final userId = await SharedPreferences.getInstance().then((prefs) => prefs.getString('userId'));
@@ -72,13 +80,11 @@ class User {
 
 Future<User> getUser() async {
   final user = await User.load();
-  print(user.cookies);
-  print(user.userId);
   final req = Request('GET', Uri.parse('https://one.prat.idf.il/api/account/getUser'));
   if (user.cookies != null) {
     req.headers['Cookie'] =
         user.cookies.map((c) => '${c.cookie.name}=${c.cookie.value}').join(';');
-    print('Sending Request with cookie: ' + req.headers['Cookie']);
+    appLog.v('Sending Request with cookies: ' + user.cookies.map((c) => '${c.cookie.name}=${ellipsis(c.cookie.value)}').join(';\r\n'));
   }
   final response = await Response.fromStream(await req.send());
   if (response.headers.containsKey('set-cookie') && response.headers['set-cookie'] != null) {

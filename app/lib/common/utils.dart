@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -23,4 +24,10 @@ List<SerializableCookie> parseSetCookie(String setCookie){
 DateTime today(){
   final now = DateTime.now();
   return DateTime(now.year, now.month, now.day);
+}
+
+String ellipsis(dynamic obj, {maxLength=10}){
+  final str = obj.toString();
+  return str.substring(0, min(str.length, maxLength)) +
+      (str.length > maxLength ? '...' : '');
 }

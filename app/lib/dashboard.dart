@@ -25,19 +25,20 @@ class _DashboardState extends State<Dashboard> {
   User user;
   Future<List<ScheduledReport>> scheduled;
   Map<String, Status> _statuses;
-  bool _isLoadingStatuses = true;
 
   @override
   void initState() {
     super.initState();
     user = widget.user;
     scheduled = loadScheduled();
+    user.reloadReportSettings().then((value) {
+      setState((){});
+    });
     rootBundle.loadStructuredData(
         'assets/strings/statuses.json',
             (jsonStr) async => parseStatuses(jsonStr)).then((value) {
               setState(() {
                 _statuses = value;
-                _isLoadingStatuses = false;
               });
             });
   }

@@ -50,3 +50,4 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/graphics/rooster_icon_256.png"
+  image_path_ios: "assets/graphics/rooster_yellow_512.png"

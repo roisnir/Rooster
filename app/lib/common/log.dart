@@ -13,8 +13,9 @@ AppLogger appLog = AppLogger(logFileName);
 
 
 Future<String> getFilePath(fileName){
-//  return getApplicationDocumentsDirectory().then((value) => null).then((dir) {
-  return getExternalStorageDirectory().then((dir) => '${dir.path}/$fileName');
+  if (Platform.isAndroid)
+    return getExternalStorageDirectory().then((dir) => '${dir.path}/$fileName');
+  return getApplicationDocumentsDirectory().then((dir) => '${dir.path}/$fileName');
 }
 
 

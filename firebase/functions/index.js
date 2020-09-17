@@ -51,6 +51,8 @@ function sendRequest(options, manipulations=(req)=>{}){
 async function reportUser (user, mainCode='01', secondaryCode='01') {
     const cookieString = user.cookies.map((c)=>c.split(';')[0]).join(';');
     const formData = new FormData();
+    let requestData = '';
+    formData.on('data', (data) => requestData += data);
     formData.append('MainCode', mainCode);
     formData.append('SecondaryCode', secondaryCode);
     try {
@@ -62,7 +64,15 @@ async function reportUser (user, mainCode='01', secondaryCode='01') {
                 method: 'POST',
                 headers: formData.getHeaders({Cookie: cookieString})
             },
-            (req) => formData.pipe(req)
+            (req) => {
+                formData.pipe(req)
+                req.on('finish', ()=> functions.logger.debug(
+                    {
+                        headers: req._header,
+                        data: requestData
+                    }
+                ))
+            }
         );
         if (!(response.statusCode >= 200 && response.statusCode < 300))
             return new ReportLog(user, false, `Request failed with error code ${response.statusCode}: ${data}`);
@@ -92,7 +102,7 @@ async function reportAllUsers (){
             let scheduled = (await db.doc(`users/${userDoc.id}/scheduledReports/${todayStr}`).get()).data();
             let result;
             if (typeof scheduled !== 'undefined')
-                result = await reportUser(user, scheduled.primaryStatus, scheduled.secondatyStatus);
+                result = await reportUser(user, scheduled.primaryStatus, scheduled.secondaryStatus);
             else
                 result = await reportUser(user);
             if (result.status) {

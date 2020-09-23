@@ -30,6 +30,8 @@ class User {
 
   Future<void> reloadReportSettings() async {
     final userData = (await FirebaseFirestore.instance.doc('users/$userId').get()).data();
+    if (userData == null)
+      return;
     if (userData.containsKey('autoReportEnabled'))
       autoReportEnabled = userData['autoReportEnabled'];
     if (userData.containsKey('lastReportedAt')) {
